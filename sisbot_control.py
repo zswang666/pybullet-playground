@@ -7,7 +7,7 @@ from collections import namedtuple
 from attrdict import AttrDict
 
 serverMode = p.GUI # GUI/DIRECT
-robotUrdfPath = "./urdf/sisbot.urdf"
+robotUrdfPath = "./urdf/sisbot_noertia.urdf"
 #robotUrdfPath = "./urdf/robotiq_c2.urdf"
 #robotUrdfPath = "./urdf/ur5.urdf"
 
@@ -58,8 +58,10 @@ for i in range(numJoints):
                      jointUpperLimit,jointMaxForce,jointMaxVelocity,controllable)
     if info.type=="REVOLUTE": # set revolute joint to static
         p.setJointMotorControl2(robotID, info.id, p.VELOCITY_CONTROL, targetVelocity=0, force=0)
-        #p.setJointMotorControl2(robotID, info.id, p.POSITION_CONTROL, targetPosition=0, force=100)
     joints[info.name] = info
+# make all links of robot zero-massed
+#for linkID in range(len(p.getVisualShapeData(robotID))):
+#    p.changeDynamics(robotID, linkID, mass=0)
 
 ###############################################
 ## set up mimic joints in robotiq_c2 gripper ##
