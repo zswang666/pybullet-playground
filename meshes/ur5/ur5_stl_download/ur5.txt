@@ -1,0 +1,13 @@
+﻿"Symbol";"Value";"Unit";
+"TraceParts.PartNumber";"10-06032017-106404";"";
+"REFERENCE";"UR5";"";
+"TraceParts.PartTitle";"UR5 Robot";"";
+"TraceParts.InstanceId";"10-06032017-1064044JM0KS2EWNQQ0WZCXXPUBTHFX";"";
+"DESIGN";"UR5 Robot";"";
+"TraceParts.PartStatus";"Published";"";
+"TraceParts.PartStatusId";"";"";
+"SUPPLIER";"Universal Robots A/S";"";
+"TraceParts.PartVersion";"1.0.0";"";
+"TRACEPARTS";"TRACEPARTS";"";
+"TraceParts.PartLanguage";"en";"";
+"TraceParts.ClassPath";"UNIVERSAL_ROBOTS:/F_UNIVERSAL_ROBOTS/10-06032017-106404";"";
