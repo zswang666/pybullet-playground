@@ -43,11 +43,20 @@ for i in range(numJoints):
 print("------------------------------------------")
 
 # start simulation
+linkNum = 0
 try:
     flag = True
+    updateLinkNum = True
     while(flag):
         p.stepSimulation()
-        robotPos, robotOrn = p.getBasePositionAndOrientation(robotID)
+        try:
+            if updateLinkNum:
+                linkNum += 1
+                linkIDIn = p.addUserDebugParameter("linkID", 0, linkNum, 0)
+            linkID = p.readUserDebugParameter(linkIDIn)
+            p.setDebugObjectColor(robotID, int(linkID), [255,0,0])
+        except KeyError:
+            updateLinkNum = False
     p.disconnect()
-except:
+except KeyError:
     p.disconnect()

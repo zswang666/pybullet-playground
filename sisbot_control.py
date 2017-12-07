@@ -31,8 +31,8 @@ robotStartOrn = p.getQuaternionFromEuler([0,0,0])
 print("----------------------------------------")
 print("Loading robot from {}".format(robotUrdfPath))
 robotID = p.loadURDF(robotUrdfPath, robotStartPos, robotStartOrn, 
-                     #flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT & p.URDF_USE_INERTIA_FROM_FILE)
-                     flags=p.URDF_USE_INERTIA_FROM_FILE)
+                     flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT)
+                     #flags=p.URDF_USE_INERTIA_FROM_FILE)
 jointTypeList = ["REVOLUTE", "PRISMATIC", "SPHERICAL", "PLANAR", "FIXED"]
 numJoints = p.getNumJoints(robotID)
 jointInfo = namedtuple("jointInfo", 

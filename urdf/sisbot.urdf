@@ -11,7 +11,7 @@
   <link name="base_link">
     <visual>
       <geometry>
-        <mesh filename="../meshes/ur5/visual/base.dae"/>
+        <mesh filename="../meshes/ur5/visual/base.obj"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -432,7 +432,7 @@
   <joint name="world_joint" type="fixed">
     <parent link="world"/>
     <child link="base_link"/>
-    <origin rpy="0.0 0.0 -0.6" xyz="0.0 0.0 0.7"/>
+    <origin rpy="0.0 0.0 -0.6" xyz="0.0 0.0 0.1"/>
   </joint>
   <!-- connect gripper to arm -->
   <joint name="arm_gripper_joint" type="fixed">
