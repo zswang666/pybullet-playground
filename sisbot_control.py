@@ -7,7 +7,7 @@ from collections import namedtuple
 from attrdict import AttrDict
 
 serverMode = p.GUI # GUI/DIRECT
-robotUrdfPath = "./urdf/sisbot_noertia.urdf"
+robotUrdfPath = "./urdf/sisbot.urdf"
 #robotUrdfPath = "./urdf/robotiq_c2.urdf"
 #robotUrdfPath = "./urdf/ur5.urdf"
 
@@ -76,9 +76,12 @@ mimicChildName = ["robotiq_85_right_knuckle_joint",
 mimicMul = [-1,-1,-1,-1,-1,-1]
 mimicChildList = []
 parent = joints[mimicParentName]
+parentPos = p.getJoint
+parentOrn = 
 constraints = dict()
 for i, name in enumerate(mimicChildName):
     child = joints[name]
+    childJoint
     c = p.createConstraint(robotID, parent.id,
                            robotID, child.id,
                            jointType=p.JOINT_GEAR,
