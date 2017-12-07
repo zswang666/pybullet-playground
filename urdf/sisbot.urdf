@@ -40,7 +40,7 @@
   <link name="shoulder_link">
     <visual>
       <geometry>
-        <mesh filename="../meshes/ur5/visual/shoulder.dae"/>
+        <mesh filename="../meshes/ur5/visual/shoulder.obj"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -68,7 +68,7 @@
   <link name="upper_arm_link">
     <visual>
       <geometry>
-        <mesh filename="../meshes/ur5/visual/upperarm.dae"/>
+        <mesh filename="../meshes/ur5/visual/upperarm.obj"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -96,7 +96,7 @@
   <link name="forearm_link">
     <visual>
       <geometry>
-        <mesh filename="../meshes/ur5/visual/forearm.dae"/>
+        <mesh filename="../meshes/ur5/visual/forearm.obj"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -124,7 +124,7 @@
   <link name="wrist_1_link">
     <visual>
       <geometry>
-        <mesh filename="../meshes/ur5/visual/wrist1.dae"/>
+        <mesh filename="../meshes/ur5/visual/wrist1.obj"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -152,7 +152,7 @@
   <link name="wrist_2_link">
     <visual>
       <geometry>
-        <mesh filename="../meshes/ur5/visual/wrist2.dae"/>
+        <mesh filename="../meshes/ur5/visual/wrist2.obj"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -180,7 +180,7 @@
   <link name="wrist_3_link">
     <visual>
       <geometry>
-        <mesh filename="../meshes/ur5/visual/wrist3.dae"/>
+        <mesh filename="../meshes/ur5/visual/wrist3.obj"/>
       </geometry>
       <material name="LightGrey">
         <color rgba="0.7 0.7 0.7 1.0"/>
@@ -432,7 +432,7 @@
   <joint name="world_joint" type="fixed">
     <parent link="world"/>
     <child link="base_link"/>
-    <origin rpy="0.0 0.0 -0.6" xyz="0.0 0.0 0.1"/>
+    <origin rpy="0.0 0.0 -0.6" xyz="0.0 0.0 0.7"/>
   </joint>
   <!-- connect gripper to arm -->
   <joint name="arm_gripper_joint" type="fixed">

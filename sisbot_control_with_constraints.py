@@ -5,7 +5,6 @@ import pybullet as p
 import pybullet_data
 from collections import namedtuple
 from attrdict import AttrDict
-import functools
 
 serverMode = p.GUI # GUI/DIRECT
 robotUrdfPath = "./urdf/sisbot.urdf"
@@ -16,7 +15,7 @@ physicsClient = p.connect(serverMode)
 p.setAdditionalSearchPath(pybullet_data.getDataPath())
 
 # define world
-#p.setGravity(0,0,-10) # NOTE
+p.setGravity(0,0,-10) # NOTE
 planeID = p.loadURDF("plane.urdf")
 
 #######################################
@@ -31,8 +30,7 @@ robotStartOrn = p.getQuaternionFromEuler([0,0,0])
 print("----------------------------------------")
 print("Loading robot from {}".format(robotUrdfPath))
 robotID = p.loadURDF(robotUrdfPath, robotStartPos, robotStartOrn, 
-                     #flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT & p.URDF_USE_INERTIA_FROM_FILE)
-                     flags=p.URDF_USE_INERTIA_FROM_FILE)
+                     flags=p.URDF_USE_SELF_COLLISION_EXCLUDE_PARENT)
 jointTypeList = ["REVOLUTE", "PRISMATIC", "SPHERICAL", "PLANAR", "FIXED"]
 numJoints = p.getNumJoints(robotID)
 jointInfo = namedtuple("jointInfo", 
@@ -53,35 +51,31 @@ for i in range(numJoints):
     if info.type=="REVOLUTE": # set revolute joint to static
         p.setJointMotorControl2(robotID, info.id, p.VELOCITY_CONTROL, targetVelocity=0, force=0)
     joints[info.name] = info
-# explicitly deal with mimic joints
-def controlGripper(robotID, parent, children, mul, **kwargs):
-    controlMode = kwargs.pop("controlMode")
-    if controlMode==p.POSITION_CONTROL:
-        pose = kwargs.pop("targetPosition")
-        # move parent joint
-        p.setJointMotorControl2(robotID, parent.id, controlMode, targetPosition=pose, 
-                                force=parent.maxForce, maxVelocity=parent.maxVelocity) 
-        # move child joints
-        for name in children:
-            child = children[name]
-            childPose = pose * mul[child.name]
-            p.setJointMotorControl2(robotID, child.id, controlMode, targetPosition=childPose, 
-                                    force=child.maxForce, maxVelocity=child.maxVelocity) 
-    else:
-        raise NotImplementedError("controlGripper does not support \"{}\" control mode".format(controlMode))
-    # check if there 
-    if len(kwargs) is not 0:
-        raise KeyError("No keys {} in controlGripper".format(", ".join(kwargs.keys())))
+
+###############################################
+## set up mimic joints in robotiq_c2 gripper ##
+###############################################
 mimicParentName = "robotiq_85_left_knuckle_joint"
-mimicChildren = {"robotiq_85_right_knuckle_joint":      1,
-                 "robotiq_85_right_finger_joint":       1,
-                 "robotiq_85_left_inner_knuckle_joint": 1,
-                 "robotiq_85_left_finger_tip_joint":    1,
-                 "robotiq_85_right_inner_knuckle_joint":1,
-                 "robotiq_85_right_finger_tip_joint":   1}
-parent = joints[mimicParentName] 
-children = AttrDict((j, joints[j]) for j in joints if j in mimicChildren.keys())
-controlRobotiqC2 = functools.partial(controlGripper, robotID, parent, children, mimicChildren)
+mimicChildName = ["robotiq_85_right_knuckle_joint",
+                  "robotiq_85_right_finger_joint",
+                  "robotiq_85_left_inner_knuckle_joint",
+                  "robotiq_85_left_finger_tip_joint",
+                  "robotiq_85_right_inner_knuckle_joint",
+                  "robotiq_85_right_finger_tip_joint"]
+mimicMul = [-1,-1,-1,-1,-1,-1]
+mimicChildList = []
+parent = joints[mimicParentName]
+constraints = dict()
+for i, name in enumerate(mimicChildName):
+    child = joints[name]
+    c = p.createConstraint(robotID, parent.id,
+                           robotID, child.id,
+                           jointType=p.JOINT_GEAR,
+                           jointAxis=[0,0,1],
+                           parentFramePosition=[0,0,0],
+                           childFramePosition=[0,0,0])
+    p.changeConstraint(c, gearRatio=mimicMul[i], maxForce=child.maxForce)
+    constraints[name] = c
 
 # start simulation
 try:
@@ -95,14 +89,11 @@ try:
         for name in controlJoints:
             joint = joints[name]
             pose = p.readUserDebugParameter(userParams[name])
-            if name==mimicParentName:
-                controlRobotiqC2(controlMode=p.POSITION_CONTROL, targetPosition=pose)
-            else:
-                p.setJointMotorControl2(robotID, joint.id, p.POSITION_CONTROL,
-                                        targetPosition=pose, force=joint.maxForce, 
-                                        maxVelocity=joint.maxVelocity)
+            p.setJointMotorControl2(robotID, joint.id, p.POSITION_CONTROL,
+                                    targetPosition=pose, force=joint.maxForce, 
+                                    maxVelocity=joint.maxVelocity)
         p.stepSimulation()
     p.disconnect()
-except ValueError:
+except:
     p.disconnect()
 
