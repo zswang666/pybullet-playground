@@ -25,26 +25,31 @@ print("Loading robot from {}".format(sisbotUrdfPath))
 robotID = p.loadURDF(sisbotUrdfPath, robotStartPos, robotStartOrn, 
                      flags=p.URDF_USE_INERTIA_FROM_FILE)
 joints, controlRobotiqC2, controlJoints, mimicParentName = utils.setup_sisbot(p, robotID)
-pdb.set_trace()
+eefID = 7 # ee_link
 
 # start simulation
+ABSE = lambda a,b: abs(a-b)
 try:
     flag = True
-    userParams = dict()
-    for name in controlJoints:
-        joint = joints[name]
-        userParam = p.addUserDebugParameter(name, joint.lowerLimit, joint.upperLimit, 0)
-        userParams[name] = userParam
+    xin = p.addUserDebugParameter("x", -2, 2, 0)
+    yin = p.addUserDebugParameter("y", -2, 2, 0)
+    zin = p.addUserDebugParameter("z", 0.5, 2, 1)
     while(flag):
-        for name in controlJoints:
+        x = p.readUserDebugParameter(xin)
+        y = p.readUserDebugParameter(yin)
+        z = p.readUserDebugParameter(zin)
+        jointPose = p.calculateInverseKinematics(robotID, eefID, [x,y,z])
+        for i, name in enumerate(controlJoints):
             joint = joints[name]
-            pose = p.readUserDebugParameter(userParams[name])
+            pose = jointPose[i]
             if name==mimicParentName:
                 controlRobotiqC2(controlMode=p.POSITION_CONTROL, targetPosition=pose)
             else:
                 p.setJointMotorControl2(robotID, joint.id, p.POSITION_CONTROL,
                                         targetPosition=pose, force=joint.maxForce, 
                                         maxVelocity=joint.maxVelocity)
+        rXYZ = p.getLinkState(robotID, eefID)[0] # real XYZ
+        print("x_err= {:.2f}, y_err= {:.2f}, z_err= {:.2f}".format(*list(map(ABSE,[x,y,z],rXYZ))))
         p.stepSimulation()
     p.disconnect()
 except ValueError:

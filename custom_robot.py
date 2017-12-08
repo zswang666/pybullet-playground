@@ -42,21 +42,22 @@ for i in range(numJoints):
     print("\tupper limit: {}".format(jointUpperLimit))
 print("------------------------------------------")
 
+# get links
+linkIDs = list(map(lambda linkInfo: linkInfo[1], p.getVisualShapeData(robotID)))
+linkNum = len(linkIDs)
+
 # start simulation
-linkNum = 0
 try:
     flag = True
-    updateLinkNum = True
+    prevLinkID = 0
+    linkIDIn = p.addUserDebugParameter("linkID", 0, linkNum, 0)
     while(flag):
         p.stepSimulation()
-        try:
-            if updateLinkNum:
-                linkNum += 1
-                linkIDIn = p.addUserDebugParameter("linkID", 0, linkNum, 0)
-            linkID = p.readUserDebugParameter(linkIDIn)
+        linkID = p.readUserDebugParameter(linkIDIn)
+        if linkID!=prevLinkID:
+            p.setDebugObjectColor(robotID, int(prevLinkID), [255,255,255])
             p.setDebugObjectColor(robotID, int(linkID), [255,0,0])
-        except KeyError:
-            updateLinkNum = False
+        prevLinkID = linkID
     p.disconnect()
 except KeyError:
     p.disconnect()
