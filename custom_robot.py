@@ -49,8 +49,11 @@ linkNum = len(linkIDs)
 # start simulation
 try:
     flag = True
+    textPose = list(p.getBasePositionAndOrientation(robotID)[0])
+    textPose[2] += 1
+    p.addUserDebugText("Press \'w\' and magic!!", textPose, [255,0,0], 1)
     prevLinkID = 0
-    linkIDIn = p.addUserDebugParameter("linkID", 0, linkNum, 0)
+    linkIDIn = p.addUserDebugParameter("linkID", 0, linkNum-1e-3, 0)
     while(flag):
         p.stepSimulation()
         linkID = p.readUserDebugParameter(linkIDIn)
@@ -59,5 +62,5 @@ try:
             p.setDebugObjectColor(robotID, int(linkID), [255,0,0])
         prevLinkID = linkID
     p.disconnect()
-except KeyError:
+except:
     p.disconnect()

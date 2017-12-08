@@ -103,6 +103,6 @@ try:
                                         maxVelocity=joint.maxVelocity)
         p.stepSimulation()
     p.disconnect()
-except ValueError:
+except:
     p.disconnect()
 
